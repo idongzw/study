@@ -8,6 +8,8 @@
 # default
 clear_temp=25
 high_temp=35
+log_file="/tmp/control_fan.log"
+log_time="[`date +%Y-%m-%d\ %H:%M:%S`]: "
 
 if [[ $# -eq 2 ]]; then
     clear_temp=$1
@@ -17,13 +19,17 @@ elif [[ $# -ne 0 ]]; then
     exit
 fi
 
+echo ${log_time}"--------------------------------------" >> ${log_file}
+echo ${log_time}"start control cpu temperature..." >> ${log_file}
+
 gpio18="/sys/class/gpio/gpio18"
 gpio_export="/sys/class/gpio/export"
 gpio_unexport="/sys/class/gpio/unexport"
 
 if [[ -e ${gpio18} ]]; then
-    echo "${gpio18} is exist."
+    echo ${log_time}"${gpio18} is exist." >> ${log_file}
 else
+    echo ${log_time}"gpio export 18, direction --- out" >> ${log_file}
     `echo 18 > ${gpio_export}`
     `echo out > ${gpio18}/direction`
 fi
@@ -34,14 +40,17 @@ while true; do
 
 temp=`cat ${cpu_temp}`
 temp=$((temp / 1000))
+log_time="[`date +%Y-%m-%d\ %H:%M:%S`]: "
 
 if [[ ${temp} -ge ${high_temp} ]]; then
-    echo "[`date +%Y-%m-%d\ %H:%M:%S`]:Current cpu temperature: ${temp}"
+    echo ${log_time}"Current cpu temperature: ${temp}" >> ${log_file}
     `echo 1 > ${gpio18}/value`
+    echo ${log_time}"gpio18 value --- 1" >> ${log_file}
 	sleep 5
 elif [[ ${temp} -eq ${clear_temp} ]]; then
-    echo "[`date +%Y-%m-%d\ %H:%M:%S`]:Current cpu temperature: ${temp}"
+    echo ${log_time}"Current cpu temperature: ${temp}" >> ${log_file}
     `echo 0 > ${gpio18}/value`
+    echo ${log_time}"gpio18 value --- 0" >> ${log_file}
 	sleep 5
 fi
 
