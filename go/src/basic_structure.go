@@ -3,7 +3,7 @@
 * @Author: idongzw
 * @Date:   2020-02-15 15:34:46
 * @Last Modified by:   idongzw
-* @Last Modified time: 2020-02-16 18:21:16
+* @Last Modified time: 2020-02-18 20:07:04
 */
 
 // go 程序的一般结构
@@ -22,6 +22,7 @@ import (
     "fmt"
     "math"
     "strconv"
+    "time"
 )
 
 // 常量定义
@@ -81,6 +82,60 @@ func main() {
     fmt.Println(b)
     a, _ = strconv.Atoi(b)
     fmt.Println(a)
+
+    fmt.Println("++++++++++++++++++++++++++++++")
+    //需要注意的地方(坑)
+    /*
+    1. slice append 超过容量时会自动扩展新建一个slice，先拷贝原来的值再append
+    */
+    {
+        s := make([]int, 0)
+        fmt.Println(s)
+        s = Append(s)
+        fmt.Println(s)
+    }
+
+    /*
+    2. time
+     */
+    {
+        t := time.Now()
+        fmt.Println(t)
+        fmt.Println(t.Format(time.ANSIC))
+        fmt.Println(time.ANSIC)
+        fmt.Println(t.Format("Mon Jan _2 15:04:05 2006")) //起始时间不能修改
+    }
+
+    /*
+    3. for range
+     */
+    {
+        s := []string{"a", "b", "c"}
+
+        // 输出 c c c
+        // 不按参数传递的值，都是引用
+        for _, v := range s {
+            go func() {
+                fmt.Println(v)
+            }()
+        }
+
+        // 输出 a b c
+        // 按参数传递
+        for _, v := range s {
+            go func(v string) {
+                fmt.Println(v)
+            }(v)
+        }
+
+        select {}
+    }
+}
+
+// 需设置返回值
+func Append(s []int) []int {
+    s = append(s, 3)
+    return s
 }
 
 // 可见性规则
