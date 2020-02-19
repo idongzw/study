@@ -3,7 +3,7 @@
 * @Author: idongzw
 * @Date:   2020-02-15 20:08:04
 * @Last Modified by:   idongzw
-* @Last Modified time: 2020-02-15 21:00:45
+* @Last Modified time: 2020-02-19 18:32:09
 */
 package main
 
@@ -60,6 +60,7 @@ func main() {
         var p *[100]int = &a // 数组指针
 
         fmt.Println(p)
+        fmt.Println(p[99])
     }
 
     {
@@ -106,6 +107,8 @@ func main() {
             {4, 5}}
 
         fmt.Println(a)
+        fmt.Println(a[0])
+        fmt.Println(len(a[0]), len(a))
 
         b := [2][3]int {
             {1:2},
@@ -136,5 +139,62 @@ func main() {
         }
 
         fmt.Println(a)
+    }
+
+    fmt.Println("++++++++++++++++++++++++++++++")
+
+    // 遍历
+    {
+        a := [...]int{1,2,3,4,5,6,7,8,9}
+        fmt.Println(a)
+        num := len(a)
+        for i := 0; i < num; i++ {
+            a[i] = i
+        }
+        fmt.Println(a)
+
+        for i, v := range a {
+            a[i] = v + 1
+        }
+
+        fmt.Println(a)
+    }
+
+    /*
+    * 数组是值类型
+    * 值类型：理解为存储的数值本身
+    *     将数据传递给其他变量，传递的是数据的副本
+    *     int float string bool array ...
+    * 引用类型：理解为存储的数据的内存地址
+    *     slice map ...
+    *     
+     */
+    // 数组的数据类型：
+    //  [size]type
+    {
+        // 1. 数据类型
+        num := 10
+
+        a1 := [3]int{1,2,3}
+        a2 := [4]float32{1.1,2.2,3.3}
+        a3 := [2]string{"1","2"}
+        a4 := [...]bool{false, true}
+
+        fmt.Printf("%T\n", a1) // [3]int
+        fmt.Printf("%T\n", a2) // [4]float32
+        fmt.Printf("%T\n", a3) // [2]string
+        fmt.Printf("%T\n", a4) // [2]bool
+
+        // 2. 赋值
+        num1 := num //值传递
+        fmt.Println(num, num1)
+        num1 = 100
+        fmt.Println(num, num1)
+
+        // 3. 数组
+        a5 := a1 // 值传递
+        fmt.Println(a1, a5)
+        a5[1] = 0
+        fmt.Println(a1, a5)
     }
 }
