@@ -155,7 +155,9 @@ func main() {
 	{
 		a := "dzw"
 		b := "space"
+		c := `Hello`
 		fmt.Println(a + " " + b)
+		fmt.Println(c)
 	}
 
 	fmt.Println("------------------------------------------------")
