@@ -180,6 +180,10 @@ func main() {
 		fmt.Println("e:", e)
 
 		// 常量在需要的时候，会自动转型
+		f1 := 3.14
+		sum := f1 + 100
+		fmt.Printf("sum: %T,%f\n", sum, sum)
+
 		const c1 = 12
 		fmt.Println("c1:", c1)
 		const c2 float32 = c1
