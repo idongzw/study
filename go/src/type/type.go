@@ -178,6 +178,21 @@ func main() {
 		// 显式类型装换
 		var e float64 = float64(d)
 		fmt.Println("e:", e)
+
+		// 常量在需要的时候，会自动转型
+		const c1 = 12
+		fmt.Println("c1:", c1)
+		const c2 float32 = c1
+		fmt.Println("c2:", c2)
+		fmt.Printf("c1 = %T,%d\n", c1, c1)
+		fmt.Printf("c2 = %T,%f\n", c2, c2)
+
+		// 兼容类型才可以转换
+		b1 := false
+		i1 := 12
+		//i1 = int(b1) // cannot convert b1 (type bool) to type int
+		fmt.Println("b1:", b1)
+		fmt.Println("i1:", i1)
 	}
 
 	fmt.Println("------------------------------------------------")
