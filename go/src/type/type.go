@@ -7,8 +7,8 @@ bool
 	uint8, uint16, uint32, uint64, uint
 	float32, float64
 	complex64, complex128
-	byte
-	rune
+	byte(uint8)
+	rune(int32)
 
 string
 */
@@ -200,4 +200,18 @@ func main() {
 	}
 
 	fmt.Println("------------------------------------------------")
+
+	/*
+	数据类型：
+		1. 按数据类型来分：
+			基本数据类型：
+				int, float, string bool, ...
+			复合数据类型：
+				array, slice, map, struct, interface, ...
+		2. 按照数据的存储特点来分：
+			值类型的数据：操作的是数值本身
+				int, float, string, bool, array
+			引用数据类型：操作的是数据的地址
+				slice, map, chan
+	 */
 }
