@@ -3,7 +3,7 @@
 * @Author: idongzw
 * @Date:   2020-02-15 15:34:46
 * @Last Modified by:   idongzw
-* @Last Modified time: 2020-02-18 20:07:04
+* @Last Modified time: 2020-02-21 10:30:47
 */
 
 // go 程序的一般结构
@@ -23,6 +23,9 @@ import (
     "math"
     "strconv"
     "time"
+    "errors"
+    "os"
+    "net"
 )
 
 // 常量定义
@@ -110,6 +113,7 @@ func main() {
     3. for range
      */
     {
+        /*
         s := []string{"a", "b", "c"}
 
         // 输出 c c c
@@ -127,9 +131,96 @@ func main() {
                 fmt.Println(v)
             }(v)
         }
+        */
 
-        select {}
+//        select {}
     }
+
+    // 创建error信息两种方式
+    {
+        err1 := errors.New("my errors") // *errors.errorString
+        fmt.Printf("err1 type (%T), err1 = (%v)\n", err1, err1)
+
+        err2 := fmt.Errorf("error code = %d", 100) // *errors.errorString
+        fmt.Printf("err2 type (%T), err2 = (%v)\n", err2, err2)
+    }
+
+    {
+        err := checkAge(-20)
+        if err != nil {
+            fmt.Println(err)
+            //return
+        }
+        fmt.Println("run...")
+    }
+
+    // open file
+    {
+        f, err := os.Open("test.txt")
+
+        if err != nil {
+            fmt.Println(err) // open test.txt: no such file or directory
+            if ins, ok := err.(*os.PathError); ok {
+                fmt.Println("1.Op:", ins.Op) // 1.Op: open
+                fmt.Println("2.Path:", ins.Path) // 2.Path: test.txt
+                fmt.Println("3.Err:", ins.Err) // 3.Err: no such file or directory
+            }
+            return
+        }
+        fmt.Println(f.Name(),"open success")
+    }
+
+    {
+        addr, err := net.LookupHost("45.76.240.193")
+        fmt.Println(addr, err)
+    }
+
+    {
+        age, err := testMyError(-30)
+        if err != nil {
+            fmt.Println(err) // error code: 100, error msg: age is illegal
+        }
+        fmt.Println(age)
+    }
+}
+
+/*
+error: 内置的数据类型，内置的接口
+    定义方法：Error() string
+
+使用go语言提供好的包：
+    errors包下提供的函数：New()，创建一个error对象
+    fmt包下的Errorf()函数：
+        func Errorf(format string, a ...interface{}) error
+ */
+
+// error
+func checkAge(age int) error {
+    if age < 0 {
+        //return errors.New("Illegal age")
+        return fmt.Errorf("Age %d is illegal", age)
+    }
+
+    fmt.Println("Age is:", age)
+    return nil
+}
+
+// 自定义 error
+type AgeError struct {
+    errCode int
+    errString string
+}
+
+func (e *AgeError) Error() string {
+    return fmt.Sprintf("error code: %d, error msg: %s", e.errCode, e.errString)
+}
+
+func testMyError(age int) (int, error) {
+    if age < 0 {
+        return -1, &AgeError{100, "age is illegal"}
+    }
+
+    return age, nil
 }
 
 // 需设置返回值
@@ -164,3 +255,21 @@ go语言中，使用 大小写 来决定该 常量、变量、类型、接口、
 /* 零值并不等于空值，而是当变量被声明为某种类型后的默认值，
 通常情况下值类型的默认值为 0 ，bool 为 false， string 为空字符串
 */
+
+
+//make new
+/*
+make 用于内建类型(map、slice和channel)的内存分配
+
+内建函数 new 本质上说跟其他语言中的同名函数功能一样；
+new(T)分配了零值填充的T类型的内存空间，并且返回其地址，
+即一个 *T类型的值。用Go的术语说，它返回了一个指针，指向新分配的类型T的零值
+new返回的是指针
+
+内建函数make(T, args) 与 new(T) 有着不同的功能，make只能创建 slice，map，channel，
+并且返回一个有初始值(非零)的T类型，而不是 *T。本质来讲，导致这三个类型有所不同的原因
+是指向数据结构的引用在使用之前必须被初始化。例如，一个slice，是一个包含指向数据（内部array）的指针、
+长度和容量的三项描述符；在这些项目被初始化之前，slice为nil。对于slice、map和channel来说，make初始化
+了内部的数据结构，填充适当的值。
+make返回初始化后的（非零）值
+ */

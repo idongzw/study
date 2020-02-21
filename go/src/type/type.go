@@ -214,4 +214,30 @@ func main() {
 			引用数据类型：操作的是数据的地址
 				slice, map, chan
 	 */
+	
+	{
+		var i1 myint = 12
+		var i2 int = 13
+
+		fmt.Println("i1 =", i1)
+		fmt.Println("i2 =", i2)
+
+		//i1 = i2 // cannot use i2 (type int) as type myint in assignment
+		i1 = myint(i2)
+
+		fmt.Printf("i1 type %T, i2 type %T\n", i1, i2) //i1 type main.myint, i2 type int
+
+		var i3 myint2 = 14
+		var i4 int = i3
+		fmt.Printf("i3 type %T, i4 type %T\n", i3, i4) // i3 type int, i4 type int
+	}
 }
+
+//定义一个新的类型
+type myint int
+
+//类型别名 go version 1.9后
+type myint2 = int // 不是重新定义新的数据类型，只是给int起的别名，和int可以通用
+
+//定义函数类型
+type myfun func(int, int) string

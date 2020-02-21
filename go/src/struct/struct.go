@@ -3,7 +3,7 @@
 * @Author: idongzw
 * @Date:   2020-02-16 15:01:56
 * @Last Modified by:   idongzw
-* @Last Modified time: 2020-02-16 17:11:39
+* @Last Modified time: 2020-02-20 17:04:06
 */
 package main
 
@@ -28,27 +28,37 @@ type person struct {
     Age int
 }
 
-// 匿名结构
 type person2 struct {
     Name string
     Age int
-    Contact struct {
+    Contact struct { // 匿名结构
         Phone, City string
     }
 }
 
-// 匿名字段
 type person3 struct {
-    string 
-    int
+    string //匿名字段
+    int //匿名字段，默认使用数据类型作为名字
+}
+
+type person4 struct {
+    string //匿名字段
+    int //匿名字段，默认使用数据类型作为名字
+    // 匿名字段的类型不能重复，否则会冲突 
+    //int //duplicate field int
 }
 
 type human struct {
     Sex int
 }
 
+type person5 struct {
+    h human // 非匿名字段，模拟聚合关系 has a
+    s string
+}
+
 type teacher struct {
-    human
+    human // 匿名字段，模拟继承性 is a
     Name string
     Age int
 }
@@ -121,6 +131,7 @@ func main() {
         18,
     }
     fmt.Println(p7)
+    fmt.Println(p7.string, p7.int)
 
     p8 := person{
         Name: "Joe",
