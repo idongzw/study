@@ -3,7 +3,7 @@
 * @Author: idongzw
 * @Date:   2020-02-17 12:11:09
 * @Last Modified by:   idongzw
-* @Last Modified time: 2020-02-17 21:05:09
+* @Last Modified time: 2020-02-23 12:27:58
 */
 package main
 
@@ -229,7 +229,9 @@ func main() {
         mv_hello.Call(args)
 
         mv_getname := v.MethodByName("GetName")
-        args = []reflect.Value{}
+        //args = []reflect.Value{}
+        //没有参数，传 nil 就行
+        args = nil
         name := mv_getname.Call(args)
         fmt.Println(name, reflect.ValueOf(name).Kind())
 
@@ -239,5 +241,92 @@ func main() {
         mv_setid.Call(args)
         fmt.Println(u)
         fmt.Println(v_r.Kind())
+    }
+
+    fmt.Println("-------------------------------")
+
+    {
+        var num float64 = 1.23
+        // “接口类型变量” --> “反射类型对象”
+        value := reflect.ValueOf(num)
+
+        // “反射类型对象” --> “接口类型变量”
+        convertValue := value.Interface().(float64)
+        fmt.Println(convertValue) // 1.23
+
+        //“反射类型对象” --> “接口类型变量”，理解为“强制转换”
+        //Golang对类型要求非常严格，类型一定要完全符合
+        
+        pointer := reflect.ValueOf(&num)
+        convertPointer := pointer.Interface().(*float64)
+        fmt.Println(&num, convertPointer, *convertPointer)
+    }
+
+    fmt.Println("-------------------------------")
+
+    {
+        //获取字段
+        /*
+        step1：先获取Type对象，reflect.Type
+            NumFiled()
+            Field(index)
+        step2：通过Filed()获取每一个Field字段
+        step3：Interface()，得到对应的Value
+         */
+        u := user{1, "dzw", 1}
+
+        GetMessage(u)
+
+    }
+
+    fmt.Println("-------------------------------")
+
+    // slice
+    {
+        s := make([]int, 0, 3)
+
+        getType := reflect.TypeOf(s)
+        fmt.Println("Type:", getType.Name(), ",kind:", getType.Kind()) //Type:  ,kind: slice
+
+        getValue := reflect.ValueOf(s)
+        fmt.Println("Value:", getValue) // []
+
+        fmt.Println("slice len:", getValue.Len())
+        getValue = reflect.Append(getValue, reflect.ValueOf(1))
+        fmt.Println("Value:", getValue.Interface())
+    }
+
+    fmt.Println("-------------------------------")
+
+    {
+        var a interface{}
+        a = 10
+        fmt.Println(a)
+        a = "string"
+        fmt.Println(a)
+    }
+}
+
+func GetMessage(input interface{}) {
+    getType := reflect.TypeOf(input) //先获取input的类型
+    fmt.Println("get Type is:", getType.Name())
+    fmt.Println("get Kind is:", getType.Kind())
+
+    getValue := reflect.ValueOf(input)
+    fmt.Println("get all Field is:", getValue)
+
+    num := getType.NumField()
+    for i := 0; i < num; i++ {
+        type_filed := getType.Field(i) 
+        fmt.Println("字段:", type_filed.Name, ",字段类型:", type_filed.Type)
+        value_filed := getValue.Field(i)
+        fmt.Println(value_filed.Interface())// 获取值 
+    }
+
+    // 获取方法
+    num = getType.NumMethod()
+    for i := 0; i < num; i++ {
+        method := getType.Method(i)
+        fmt.Println("method name =", method.Name, ",type =", method.Type)
     }
 }
