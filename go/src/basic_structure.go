@@ -4,7 +4,7 @@
 * @Date:   2020-02-15 15:34:46
 * @Last Modified by:   idongzw
 * @Last Modified time: 2020-02-21 12:15:05
-*/
+ */
 
 // go 程序的一般结构
 
@@ -19,13 +19,14 @@ package main
 // 导入多个包
 
 import (
-    "fmt"
-    "math"
-    "strconv"
-    "time"
-    "errors"
-    "os"
-    "net"
+	"errors"
+	"fmt"
+	"math"
+	"net"
+	"os"
+	"strconv"
+	"time"
+	"unsafe"
 )
 
 // 常量定义
@@ -33,155 +34,173 @@ import (
 // 定义多个常量
 
 const (
-    PI = 3.14
-    Name = "dzw"
+	PI   = 3.14
+	Name = "dzw"
 )
-
 
 // 全局变量的声明与赋值
 //var name = "dzw"
 // 定义多个全局变量
 
 var (
-    name = "dzw"
-    age = 26
+	name = "dzw"
+	age  = 26
 )
-
 
 // 一般类型声明
 //type newType int
 // 声明多个一般类型
 
 type (
-    newType1 int
-    newType2 float32
+	newType1 int
+	newType2 float32
 )
 
 // 结构的声明
-type gostruct struct {}
+type gostruct struct{}
 
 // 接口的声明
-type gointerface interface {}
+type gointerface interface{}
 
 type 文本 string
+
 var chinese 文本 = "中文"
 
 // main 函数作为程序入口
 func main() {
-    fmt.Println("Hello,你好")
-    //std.Println("Hello,你好") //alias
-    //Println("Hello,你好")
-    
-    fmt.Println(chinese)
+	{
+		for i := 0; i < 10; i++ {
+			switch i {
+			case 3:
+				continue
+			}
+			fmt.Println("i =", i)
+		}
+	}
 
-    fmt.Println(math.MaxInt8)
+	{
+		var i1 uint = 12
+		fmt.Println("sizeof(uint) =", unsafe.Sizeof(i1))
+		var i2 int = 12
+		fmt.Println("sizeof(int) =", unsafe.Sizeof(i2))
+		var i3 uint8 = 12
+		fmt.Println("sizeof(uint8) =", unsafe.Sizeof(i3))
+	}
 
-    a := 65
-    // string 表示将数据转换为文本格式，数字65表示文本A
-    b := string(a)
-    fmt.Println(a, b)
+	fmt.Println("Hello,你好")
+	//std.Println("Hello,你好") //alias
+	//Println("Hello,你好")
 
-    b = strconv.Itoa(a)
-    fmt.Println(b)
-    a, _ = strconv.Atoi(b)
-    fmt.Println(a)
+	fmt.Println(chinese)
 
-    fmt.Println("++++++++++++++++++++++++++++++")
-    //需要注意的地方(坑)
-    /*
-    1. slice append 超过容量时会自动扩展新建一个slice，先拷贝原来的值再append
-    */
-    {
-        s := make([]int, 0)
-        fmt.Println(s)
-        s = Append(s)
-        fmt.Println(s)
-    }
+	fmt.Println(math.MaxInt8)
 
-    /*
-    2. time
-     */
-    {
-        t := time.Now()
-        fmt.Println(t)
-        fmt.Println(t.Format(time.ANSIC))
-        fmt.Println(time.ANSIC)
-        fmt.Println(t.Format("Mon Jan _2 15:04:05 2006")) //起始时间不能修改
-    }
+	a := 65
+	// string 表示将数据转换为文本格式，数字65表示文本A
+	b := string(a)
+	fmt.Println(a, b)
 
-    /*
-    3. for range
-     */
-    {
-        /*
-        s := []string{"a", "b", "c"}
+	b = strconv.Itoa(a)
+	fmt.Println(b)
+	a, _ = strconv.Atoi(b)
+	fmt.Println(a)
 
-        // 输出 c c c
-        // 不按参数传递的值，都是引用
-        for _, v := range s {
-            go func() {
-                fmt.Println(v)
-            }()
-        }
+	fmt.Println("++++++++++++++++++++++++++++++")
+	//需要注意的地方(坑)
+	/*
+	   1. slice append 超过容量时会自动扩展新建一个slice，先拷贝原来的值再append
+	*/
+	{
+		s := make([]int, 0)
+		fmt.Println(s)
+		s = Append(s)
+		fmt.Println(s)
+	}
 
-        // 输出 a b c
-        // 按参数传递
-        for _, v := range s {
-            go func(v string) {
-                fmt.Println(v)
-            }(v)
-        }
-        */
+	/*
+	   2. time
+	*/
+	{
+		t := time.Now()
+		fmt.Println(t)
+		fmt.Println(t.Format(time.ANSIC))
+		fmt.Println(time.ANSIC)
+		fmt.Println(t.Format("Mon Jan _2 15:04:05 2006")) //起始时间不能修改
+	}
 
-//        select {}
-    }
+	/*
+	   3. for range
+	*/
+	{
+		/*
+		   s := []string{"a", "b", "c"}
 
-    // 创建error信息两种方式
-    {
-        err1 := errors.New("my errors") // *errors.errorString
-        fmt.Printf("err1 type (%T), err1 = (%v)\n", err1, err1)
+		   // 输出 c c c
+		   // 不按参数传递的值，都是引用
+		   for _, v := range s {
+		       go func() {
+		           fmt.Println(v)
+		       }()
+		   }
 
-        err2 := fmt.Errorf("error code = %d", 100) // *errors.errorString
-        fmt.Printf("err2 type (%T), err2 = (%v)\n", err2, err2)
-    }
+		   // 输出 a b c
+		   // 按参数传递
+		   for _, v := range s {
+		       go func(v string) {
+		           fmt.Println(v)
+		       }(v)
+		   }
+		*/
 
-    {
-        err := checkAge(-20)
-        if err != nil {
-            fmt.Println(err)
-            //return
-        }
-        fmt.Println("run...")
-    }
+		//        select {}
+	}
 
-    // open file
-    {
-        f, err := os.Open("test.txt")
+	// 创建error信息两种方式
+	{
+		err1 := errors.New("my errors") // *errors.errorString
+		fmt.Printf("err1 type (%T), err1 = (%v)\n", err1, err1)
 
-        if err != nil {
-            fmt.Println(err) // open test.txt: no such file or directory
-            if ins, ok := err.(*os.PathError); ok {
-                fmt.Println("1.Op:", ins.Op) // 1.Op: open
-                fmt.Println("2.Path:", ins.Path) // 2.Path: test.txt
-                fmt.Println("3.Err:", ins.Err) // 3.Err: no such file or directory
-            }
-            return
-        }
-        fmt.Println(f.Name(),"open success")
-    }
+		err2 := fmt.Errorf("error code = %d", 100) // *errors.errorString
+		fmt.Printf("err2 type (%T), err2 = (%v)\n", err2, err2)
+	}
 
-    {
-        addr, err := net.LookupHost("45.76.240.193")
-        fmt.Println(addr, err)
-    }
+	{
+		err := checkAge(-20)
+		if err != nil {
+			fmt.Println(err)
+			//return
+		}
+		fmt.Println("run...")
+	}
 
-    {
-        age, err := testMyError(-30)
-        if err != nil {
-            fmt.Println(err) // error code: 100, error msg: age is illegal
-        }
-        fmt.Println(age)
-    }
+	// open file
+	{
+		f, err := os.Open("test.txt")
+
+		if err != nil {
+			fmt.Println(err) // open test.txt: no such file or directory
+			if ins, ok := err.(*os.PathError); ok {
+				fmt.Println("1.Op:", ins.Op)     // 1.Op: open
+				fmt.Println("2.Path:", ins.Path) // 2.Path: test.txt
+				fmt.Println("3.Err:", ins.Err)   // 3.Err: no such file or directory
+			}
+			return
+		}
+		fmt.Println(f.Name(), "open success")
+	}
+
+	{
+		addr, err := net.LookupHost("45.76.240.193")
+		fmt.Println(addr, err)
+	}
+
+	{
+		age, err := testMyError(-30)
+		if err != nil {
+			fmt.Println(err) // error code: 100, error msg: age is illegal
+		}
+		fmt.Println(age)
+	}
 }
 
 /*
@@ -192,41 +211,41 @@ error: 内置的数据类型，内置的接口
     errors包下提供的函数：New()，创建一个error对象
     fmt包下的Errorf()函数：
         func Errorf(format string, a ...interface{}) error
- */
+*/
 
 // error
 func checkAge(age int) error {
-    if age < 0 {
-        //return errors.New("Illegal age")
-        return fmt.Errorf("Age %d is illegal", age)
-    }
+	if age < 0 {
+		//return errors.New("Illegal age")
+		return fmt.Errorf("Age %d is illegal", age)
+	}
 
-    fmt.Println("Age is:", age)
-    return nil
+	fmt.Println("Age is:", age)
+	return nil
 }
 
 // 自定义 error
 type AgeError struct {
-    errCode int
-    errString string
+	errCode   int
+	errString string
 }
 
 func (e *AgeError) Error() string {
-    return fmt.Sprintf("error code: %d, error msg: %s", e.errCode, e.errString)
+	return fmt.Sprintf("error code: %d, error msg: %s", e.errCode, e.errString)
 }
 
 func testMyError(age int) (int, error) {
-    if age < 0 {
-        return -1, &AgeError{100, "age is illegal"}
-    }
+	if age < 0 {
+		return -1, &AgeError{100, "age is illegal"}
+	}
 
-    return age, nil
+	return age, nil
 }
 
 // 需设置返回值
 func Append(s []int) []int {
-    s = append(s, 3)
-    return s
+	s = append(s, 3)
+	return s
 }
 
 // 可见性规则
@@ -234,7 +253,7 @@ func Append(s []int) []int {
 go语言中，使用 大小写 来决定该 常量、变量、类型、接口、结构或函数是否可以被外部包所调用
 根据预定，函数名首字母小写为private，首字母大写为public
 访问权限是 package与package 之间
- */
+*/
 
 //alias
 //byte 是 uint8 的别名
@@ -250,12 +269,10 @@ go语言中，使用 大小写 来决定该 常量、变量、类型、接口、
 // uintptr
 // 32/64位整数类型 ，保存指针
 
-
 // 类型零值
 /* 零值并不等于空值，而是当变量被声明为某种类型后的默认值，
 通常情况下值类型的默认值为 0 ，bool 为 false， string 为空字符串
 */
-
 
 //make new
 /*
@@ -272,7 +289,7 @@ new返回的是指针
 长度和容量的三项描述符；在这些项目被初始化之前，slice为nil。对于slice、map和channel来说，make初始化
 了内部的数据结构，填充适当的值。
 make返回初始化后的（非零）值
- */
+*/
 
 /*
 关于包的使用：
@@ -307,5 +324,4 @@ make返回初始化后的（非零）值
         的别名，会仅仅执行 init()
 
     导入的包的路径名，可以是相对路径也可以是绝对路径，推荐使用绝对路径（起始于工程根目录）
- */
-
+*/
