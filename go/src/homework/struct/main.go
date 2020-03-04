@@ -7,7 +7,9 @@
 
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type student struct {
 	name string

@@ -190,7 +190,10 @@ func (m *Master) login() error {
 		return &model.SimsError{ErrCode: model.NotExistError, ErrMsg: "Login user password is not valid"}
 	}
 	// need reflect
-	passwordlocal := fv.Interface().(string)
+	passwordlocal, ok := fv.Interface().(string)
+	if !ok {
+		return &model.SimsError{ErrCode: model.TypeError, ErrMsg: "Password type error"}
+	}
 
 	if passwordlocal == password {
 		view.LoginSuccessUI(strconv.FormatInt(id, 10))
@@ -490,9 +493,16 @@ func (m *Master) getUserScore(id int64, usertype string) (float32, error) {
 		return 0, &model.SimsError{ErrCode: model.NotExistError, ErrMsg: "Not exist method"}
 	}
 	rst := dis.Call(nil)
-
+	if len(rst) != 1 { // 返回参数个数
+		return 0, &model.SimsError{ErrCode: model.RstParamError, ErrMsg: "Return param error"}
+	}
 	// need reflect
-	return rst[0].Interface().(float32), nil
+	score, ok := rst[0].Interface().(float32)
+	if !ok {
+		return 0, &model.SimsError{ErrCode: model.TypeError, ErrMsg: "Score type error"}
+	}
+
+	return score, nil
 }
 
 func (m *Master) displayUserInfo(id int64, usertype string) {
@@ -767,12 +777,16 @@ func (m *Master) ReadInfoFromFile(filepath string) error {
 		switch model.UserType(userTypeBytes[0]) {
 		case model.TypeTeacher:
 			s := &model.Teacher{}
-			s.UnSerialize(dataBytes)
+			if err := s.UnSerialize(dataBytes); err != nil {
+				continue
+			}
 			// s.DisplayInfo()
 			m.allUserInfo[model.AllUserType[0]][s.ID] = s
 		case model.TypeStudent:
 			t := &model.Student{}
-			t.UnSerialize(dataBytes)
+			if err := t.UnSerialize(dataBytes); err != nil {
+				continue
+			}
 			// t.DisplayInfo()
 			m.allUserInfo[model.AllUserType[1]][t.ID] = t
 		}
@@ -813,7 +827,11 @@ func (m *Master) WriteAllInfoToFile(filepath string) error {
 				// return &model.SimsError{ErrCode: model.NotExistError, ErrMsg: "Not exist method"}
 				continue
 			}
+
 			rst := f.Call(nil)
+			if len(rst) != 2 { // 返回参数个数
+				continue
+			}
 			switch rst[1].Interface().(type) {
 			case error:
 				continue
