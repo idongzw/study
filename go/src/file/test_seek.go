@@ -31,7 +31,7 @@ func main() {
 	// }
 	// fmt.Println("seek1 len=", seekLen)
 	// reader := bufio.NewReader(file)
-	// dataLenBytes, err := reader.Peek(8) // Peek 8 之后，文件指针当前位置不是在8
+	// dataLenBytes, err := reader.Peek(8) // Peek 8 之后，文件指针当前位置不是在8,指针便宜到文件尾
 	// if err != nil {
 	// 	fmt.Println("data1 len")
 	// 	return

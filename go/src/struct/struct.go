@@ -96,9 +96,10 @@ Tag在结构体字段的后方定义，由一对反引号包裹起来，具体�
 
 // Student
 type Student struct {
-	ID     int `json:"id"` // 通过指定tag实现json序列化该字段时的key
-	Gender string
+	ID     int    `json:"id"` // 通过指定tag实现json序列化该字段时的key
+	Gender string // json序列化默认使用字段名作为key
 	Name   string
+	//score float32 // 私有不能被json包访问
 }
 
 // Class

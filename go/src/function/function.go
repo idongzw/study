@@ -232,6 +232,7 @@ func D(a string, b ...int) {
 }
 
 func E(a ...int) {
+	fmt.Println("func E(a ...int), param len =", len(a))
 	a[0] = 2
 	fmt.Println(a)
 }
