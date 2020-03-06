@@ -2,7 +2,7 @@
  * @Author: dzw
  * @Date: 2020-03-02 22:05:40
  * @Last Modified by: dzw
- * @Last Modified time: 2020-03-03 19:30:28
+ * @Last Modified time: 2020-03-06 17:13:43
  */
 
 package mylog
@@ -53,21 +53,27 @@ type Logger struct {
 	consoleflag   bool
 	consolelevel  logLevel
 	consoleoutput io.Writer
+
+	// channel
+	chLog chan *string
 }
 
 // New Logger
 func New(confpath string) *Logger {
 	if confpath == "" {
-		return newLogger(false, TRACE, "", 0, nil, true, TRACE, os.Stdout)
+		return newLogger(false, TRACE, "", 0, nil, true, TRACE, os.Stdout, nil)
 	}
 	l := &Logger{}
 	l.setConfig(confpath)
+	// channel init
+	l.chLog = make(chan *string, 5)
+	go l.processLogData()
 	return l
 }
 
 // newLogger ...
-func newLogger(fileflag bool, filelevel logLevel, filepath string, maxsize int64, filelog *os.File, consoleflag bool, consolelevel logLevel, consoleoutput io.Writer) *Logger {
-	return &Logger{fileflag, filelevel, filepath, maxsize, filelog, filelog, consoleflag, consolelevel, consoleoutput}
+func newLogger(fileflag bool, filelevel logLevel, filepath string, maxsize int64, filelog *os.File, consoleflag bool, consolelevel logLevel, consoleoutput io.Writer, ch chan *string) *Logger {
+	return &Logger{fileflag, filelevel, filepath, maxsize, filelog, filelog, consoleflag, consolelevel, consoleoutput, nil}
 }
 
 // setConfig ...
@@ -219,14 +225,46 @@ func (l *Logger) Output(level logLevel, format string, a ...interface{}) {
 	filename, funcname, linenum := getRuntimeInfo(3)
 	msg := fmt.Sprintf(format, a...)                    // 格式化输入的日志
 	now := time.Now().Format("2006-01-02 15:04:05.000") // 格式化的时间
+	// 格式化日志信息
+	data := fmt.Sprintf("[%s][%s](%s:%s:%d) %s\n", now, levelStr, filename, funcname, linenum, msg)
 
 	if l.enableFile(level) {
 		l.processLogFile()
-		fmt.Fprintf(l.fileoutput, "[%s][%s](%s:%s:%d) %s\n", now, levelStr, filename, funcname, linenum, msg) // 格式化日志输出
+		l.writeDataToChan(&data)
+		// fmt.Fprintf(l.fileoutput, "[%s][%s](%s:%s:%d) %s\n", now, levelStr, filename, funcname, linenum, msg) // 格式化日志输出
 	}
 
 	if l.enableConsole(level) {
-		fmt.Fprintf(l.consoleoutput, "[%s][%s](%s:%s:%d) %s\n", now, levelStr, filename, funcname, linenum, msg) // 格式化日志输出
+		// fmt.Fprintf(l.consoleoutput, "[%s][%s](%s:%s:%d) %s\n", now, levelStr, filename, funcname, linenum, msg) // 格式化日志输出
+		fmt.Fprint(l.consoleoutput, data)
+	}
+}
+
+// 异步写日志
+func (l *Logger) writeDataToChan(msg *string) {
+	l.chLog <- msg
+}
+
+func (l *Logger) readDataFromChan() *string {
+	msg := <-l.chLog
+
+	return msg
+}
+
+func (l *Logger) writeDataToFile(msg *string) {
+	// msg := <-l.chLog
+	fmt.Fprint(l.fileoutput, *msg)
+}
+
+// func (l *Logger) writeDataToConsole(msg *string) {
+// 	// msg := <-l.chLog
+// 	fmt.Fprint(l.consoleoutput, *msg)
+// }
+
+func (l *Logger) processLogData() {
+	for {
+		data := l.readDataFromChan()
+		l.writeDataToFile(data)
 	}
 }
 
