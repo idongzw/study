@@ -2,7 +2,7 @@
  * @Author: dzw
  * @Date: 2020-03-02 22:05:40
  * @Last Modified by: dzw
- * @Last Modified time: 2020-03-06 17:13:43
+ * @Last Modified time: 2020-03-06 18:00:58
  */
 
 package mylog
@@ -242,7 +242,10 @@ func (l *Logger) Output(level logLevel, format string, a ...interface{}) {
 
 // 异步写日志
 func (l *Logger) writeDataToChan(msg *string) {
-	l.chLog <- msg
+	select {
+	case l.chLog <- msg: // 缓冲区满，会阻塞
+	default: //缓冲区满,丢掉日志
+	}
 }
 
 func (l *Logger) readDataFromChan() *string {
