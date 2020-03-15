@@ -327,6 +327,58 @@ func main() {
 		a = "string"
 		fmt.Println(a)
 	}
+
+	fmt.Println("-------------------------------")
+
+	{
+		var i1 interface{}
+		i1 = (*int)(nil)
+		fmt.Println("i1 = ", i1 == nil)
+		t := reflect.TypeOf(i1)
+		fmt.Println("t.Kind() =", t.Kind())
+		fmt.Println("t.Elem() =", t.Elem())
+		fmt.Println("t.Elem().Kind() =", t.Elem().Kind())
+	}
+
+	fmt.Println("-------------------------------")
+
+	{
+		var i1 interface{}
+		slice := []int{}
+		i1 = slice
+		fmt.Println("i1 = ", i1 == nil)
+		t := reflect.TypeOf(i1)
+		fmt.Println("t.Kind() =", t.Kind())
+		fmt.Println("t.Elem() =", t.Elem())
+		fmt.Println("t.Elem().Kind() =", t.Elem().Kind())
+	}
+
+	fmt.Println("-------------------------------")
+
+	{
+		var i1 interface{}
+		m := map[string]int{}
+		i1 = m
+		fmt.Println("i1 = ", i1 == nil)
+		t := reflect.TypeOf(i1)
+		fmt.Println("t.Kind() =", t.Kind())
+		fmt.Println("t.Elem() =", t.Elem()) // get map value type
+		fmt.Println("t.Key() =", t.Key())   // get map key type
+		fmt.Println("t.Elem().Kind() =", t.Elem().Kind())
+	}
+
+	fmt.Println("-------------------------------")
+
+	{
+		var i1 interface{}
+		array := [...]int{1, 2, 3}
+		i1 = array
+		fmt.Println("i1 = ", i1 == nil)
+		t := reflect.TypeOf(i1)
+		fmt.Println("t.Kind() =", t.Kind())
+		fmt.Println("t.Elem() =", t.Elem())
+		fmt.Println("t.Elem().Kind() =", t.Elem().Kind())
+	}
 }
 
 func GetMessage(input interface{}) {

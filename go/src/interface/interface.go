@@ -241,6 +241,12 @@ func main() {
 		i1 = p
 		fmt.Println(i1 == nil) // false
 
+		i1 = 1
+		fmt.Println("i1 = ", i1)
+
+		i1 = (*int)(nil)
+		fmt.Println("i1 = ", i1 == nil)
+
 		// 接口调用不会做receiver的自动转换
 		// 接口同样支持匿名字段方法
 		// 接口也可实现类似OOP的多态
