@@ -291,10 +291,31 @@ func main() {
 
 		getValue := reflect.ValueOf(s)
 		fmt.Println("Value:", getValue) // []
+		fmt.Println("Valueof:", getValue.Kind())
 
 		fmt.Println("slice len:", getValue.Len())
 		getValue = reflect.Append(getValue, reflect.ValueOf(1))
 		fmt.Println("Value:", getValue.Interface())
+
+		fmt.Println("typeof elem:", reflect.TypeOf(s).Elem())
+	}
+
+	fmt.Println("-------------------------------")
+
+	// *slice
+	{
+		var s []int
+
+		getType := reflect.TypeOf(&s)
+		fmt.Println("Type name:", getType.Name(), ",kind:", getType.Kind(), ", kind:", getType.Elem().Kind(), ",element type:", getType.Elem().Elem().Kind()) //Type:  ,kind: slice
+
+		getValue := reflect.ValueOf(&s)
+		fmt.Println("Value:", getValue) // []
+		fmt.Println("Valueof:", getValue.Elem().Kind())
+
+		// fmt.Println("slice len:", getValue.Len())
+		// getValue = reflect.Append(getValue, reflect.ValueOf(1))
+		// fmt.Println("Value:", getValue.Interface())
 	}
 
 	fmt.Println("-------------------------------")
