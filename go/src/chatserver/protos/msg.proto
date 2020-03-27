@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+package protos;
+
+// gender type
+enum GenderType {
+    SECRET = 0;
+    FEMALE = 1;
+    MALE = 2;
+}
+
+// user info
+message UserInfo {
+    uint64 id = 1;           // user id
+    string password = 2;
+    string name = 3;        // user name
+    uint32 age = 4;
+    GenderType gender = 5;  // user gender
+}
+
+// sign up request
+message SignupRequest {
+    string name = 1;
+    uint32 age = 2;
+    GenderType gender = 3;
+}
+
+// sign up response
+message SignupResponse {
+    uint32 result = 1;
+    uint64 id = 2;
+    string password = 3;
+}
+
+// login request
+message LoginRequest {
+    uint64 id = 1;
+    string password = 2;
+}
+
+enum LoginResult {
+    SUCCESS = 0; // login success
+    PSWERROR = 1; // login password error
+    USERNOTEXIST = 2; // user not exist
+    USERALDYONLINE = 3; // user is already online
+    INTERERROR = 4; // inter error
+}
+
+// login response
+message LoginResponse {
+    LoginResult result = 1;
+}
+
+// login out
+message LogoutRequest {
+    uint64 id = 1;
+}
+
+enum LogoutResult {
+    LOGOUTSUCCESS = 0;
+    LOGOUTINTERERROR = 1;
+    // ...
+}
+
+// logout response
+message LogoutResponse {
+    LogoutResult result = 1;
+}
+
+enum ChatMsgType {
+    PRIVATE_CHAT = 0;
+    GROUP_CHAT = 1;
+    // ...
+}
+
+message ChatMsg {
+    uint32 msgId = 1; // msg id
+    ChatMsgType msgType = 2;
+    uint64 msgFrom = 3; // msg from user id
+    uint64 msgTo = 4; // msg to user id
+    string data = 5; // chat msg
+}
+
+// client and server heartbeat msg
+message HeartbeatMsg {
+    string msg = 1;
+}
+
+// client and server heartbeat replay msg
+message HeartbeatReplyMsg {
+    string msg = 1;
+}
