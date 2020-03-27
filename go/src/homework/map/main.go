@@ -75,10 +75,25 @@ func main() {
 		s := "s上海自来s水s来自海上s"
 		// 先转成 []rune
 		sr := make([]rune, 0, len(s))
-		for _, v := range s {
+
+		// 中文不是占用一个字节
+		// num_s := len(s)
+		// fmt.Println("len(s) = ", num_s)
+		// for i := 0; i < num_s; i++ {
+		// 	fmt.Println("s[i] =", s[i], " s[num_s-(i+1)] =", s[num_s-(i+1)])
+		// 	if s[i] != s[num_s-(i+1)] {
+		// 		fmt.Println("不是回文")
+		// 		return
+		// 	}
+		// }
+		// fmt.Println("是回文")
+
+		for i, v := range s { //  i 是字符的字节位置，v 是字符的拷贝，有中文字符需要转为rune
+			fmt.Println("i = ", i)
 			sr = append(sr, v)
 		}
 		num := len(sr)
+		fmt.Println("len(sr) = ", len(sr))
 
 		for i := range sr {
 			if sr[i] != sr[num-(i+1)] {
