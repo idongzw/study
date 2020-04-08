@@ -2,7 +2,7 @@
  * @Author: dzw
  * @Date: 2020-03-16 11:08:19
  * @Last Modified by: dzw
- * @Last Modified time: 2020-03-16 15:40:53
+ * @Last Modified time: 2020-03-30 11:31:18
  */
 
 /*
@@ -70,4 +70,25 @@ func maxForInt(x, y int) int {
 		return x
 	}
 	return y
+}
+
+func lengthOfLongestSubstring1(s string) int {
+	i := 0
+	max := 0
+
+	//abcabcbb
+	sr := []rune(s)
+	for idx, c := range sr {
+		for j := i; j < idx; j++ {
+			if sr[j] == c { // 检测当前字符和之前的有没有相同，相同则后移
+				i = j + 1
+			}
+		}
+		// 当前最长
+		if idx-i+1 > max {
+			max = idx - i + 1
+		}
+	}
+
+	return max
 }
